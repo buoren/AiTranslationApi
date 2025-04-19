@@ -6,17 +6,6 @@ build/
 gradle-app.setting
 !gradle-wrapper.jar
 
-# Vue.js
-frontend/node_modules/
-frontend/dist/
-frontend/.env.local
-frontend/.env.*.local
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/coverage/
-frontend/.vscode-test/
-
 # Java
 *.class
 *.log
