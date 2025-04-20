@@ -69,4 +69,61 @@ public class TranslationServiceTest {
         assertEquals("Hallo", result);
         verify(translationProviderService).generateTranslation(any());
     }
+
+    @Test
+    public void testSave_ExistingTranslation() {
+        // Given
+        Translation existingTranslation = new Translation();
+        existingTranslation.setId(1L);
+        existingTranslation.setSourceText("Hello");
+        existingTranslation.setSourceContext("Greeting");
+        existingTranslation.setSourceLanguage("en");
+        existingTranslation.setTargetLanguage("nl");
+        existingTranslation.setTargetGeneratedText("Hallo");
+        existingTranslation.setTargetPromptText("Translate 'Hello' to Dutch");
+
+        Translation updatedTranslation = new Translation();
+        updatedTranslation.setSourceText("Hello");
+        updatedTranslation.setSourceContext("Greeting");
+        updatedTranslation.setSourceLanguage("en");
+        updatedTranslation.setTargetLanguage("nl");
+        updatedTranslation.setTargetGeneratedText("Hallo daar");
+        updatedTranslation.setTargetPromptText("Translate 'Hello' to Dutch");
+
+        when(translationRepository.findBySourceTextAndSourceLanguageAndTargetLanguage(
+            any(), any(), any(), any()
+        )).thenReturn(Optional.of(existingTranslation));
+
+        when(translationRepository.save(any())).thenReturn(existingTranslation);
+
+        // When
+        Translation result = translationService.save(updatedTranslation);
+
+        // Then
+        assertEquals("Hallo daar", result.getTargetGeneratedText());
+        verify(translationRepository).save(existingTranslation);
+    }
+
+    @Test
+    public void testSave_NewTranslation() {
+        // Given
+        Translation newTranslation = new Translation();
+        newTranslation.setSourceText("Hello");
+        newTranslation.setSourceContext("Greeting");
+        newTranslation.setSourceLanguage("en");
+        newTranslation.setTargetLanguage("nl");
+
+        when(translationRepository.findBySourceTextAndSourceLanguageAndTargetLanguage(
+            any(), any(), any(), any()
+        )).thenReturn(Optional.empty());
+
+        when(translationRepository.save(any())).thenReturn(newTranslation);
+
+        // When
+        Translation result = translationService.save(newTranslation);
+
+        // Then
+        assertNotNull(result);
+        verify(translationRepository).save(newTranslation);
+    }
 } 

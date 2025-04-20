@@ -75,6 +75,7 @@ public class TranslationService {
             translation.setSourceLanguage(sourceLanguage);
             translation.setTargetLanguage(targetLanguage);
             translation = translationProviderService.generateTranslation(translation);
+            translationRepository.save(translation);
         }
         
         if(translation.getTargetValidatedText() != null) {

@@ -26,7 +26,9 @@ public class TranslationMapper {
             translation.setSourceContext(request.getSourceContext());
             translation.setSourceLanguage(request.getSourceLanguage());
             translation.setTargetLanguage(request.getTargetLanguage());
-            return translationProviderService.generateTranslation(translation);
+            Translation translationResult = translationProviderService.generateTranslation(translation);
+            translation.setTargetGeneratedText(translationResult.getTargetGeneratedText());
+            return translation;
         });
     }
 

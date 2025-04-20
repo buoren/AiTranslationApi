@@ -48,6 +48,7 @@ public class ChatGPTTranslationService implements TranslationProviderService {
         var response = chatCompletion.getChoices().get(0).getMessage().getContent().trim();
 
         translation.setTargetGeneratedText(response);
+        translation.setTargetPromptText(prompt);
         return translation;
     }
 } 
