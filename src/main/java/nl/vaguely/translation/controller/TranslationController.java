@@ -1,11 +1,11 @@
 package nl.vaguely.translation.controller;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import nl.vaguely.translation.dto.TranslationRequest;
 import nl.vaguely.translation.dto.TranslationResponse;
 import nl.vaguely.translation.dto.TranslationResult;
 import nl.vaguely.translation.mapper.TranslationMapper;
+import nl.vaguely.translation.model.Translation;
 import nl.vaguely.translation.service.TranslationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/translations")
-@RequiredArgsConstructor
 public class TranslationController {
     private final TranslationService translationService;
     private final TranslationMapper translationMapper;
+
+    public TranslationController(TranslationService translationService, TranslationMapper translationMapper) {
+        this.translationService = translationService;
+        this.translationMapper = translationMapper;
+    }
 
     @GetMapping
     public ResponseEntity<List<TranslationResponse>> getAllTranslations() {

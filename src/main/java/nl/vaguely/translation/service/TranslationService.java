@@ -1,19 +1,28 @@
 package nl.vaguely.translation.service;
 
-import lombok.RequiredArgsConstructor;
-import nl.vaguely.translation.model.Translation;
-import nl.vaguely.translation.repository.TranslationRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import nl.vaguely.translation.model.Translation;
+import nl.vaguely.translation.repository.TranslationRepository;
+
 @Service
-@RequiredArgsConstructor
 public class TranslationService {
+    private static final Logger log = LoggerFactory.getLogger(TranslationService.class);
     private final TranslationRepository translationRepository;
     private final TranslationProviderService translationProviderService;
+
+    @Autowired
+    public TranslationService(TranslationRepository translationRepository, TranslationProviderService translationProviderService) {
+        this.translationRepository = translationRepository;
+        this.translationProviderService = translationProviderService;
+    }
 
     public List<Translation> findAll() {
         return translationRepository.findAll();
@@ -44,6 +53,8 @@ public class TranslationService {
             return translationRepository.save(existing);
         }
 
+        // If no existing translation, generate one using the API
+        translation = translationProviderService.generateTranslation(translation);
         return translationRepository.save(translation);
     }
 
@@ -58,30 +69,20 @@ public class TranslationService {
         String sourceLanguage,
         String targetLanguage
     ) {
-        Optional<Translation> translationOpt = translationRepository.findBySourceTextAndSourceLanguageAndTargetLanguage(
-            sourceText,
-            sourceContext,
-            sourceLanguage,
-            targetLanguage
-        );
-
-        Translation translation = null;
-        if (translationOpt.isPresent()) {
-            translation = translationOpt.get();
-        } else {
-            translation = new Translation();
-            translation.setSourceText(sourceText);
-            translation.setSourceContext(sourceContext);
-            translation.setSourceLanguage(sourceLanguage);
-            translation.setTargetLanguage(targetLanguage);
-            translation = translationProviderService.generateTranslation(translation);
-            translationRepository.save(translation);
-        }
+        Translation translation = translationRepository.findBySourceTextAndSourceLanguageAndTargetLanguage(
+            sourceText, sourceContext, sourceLanguage, targetLanguage
+        ).orElseGet(() -> {
+            Translation newTranslation = new Translation();
+            newTranslation.setSourceText(sourceText);
+            newTranslation.setSourceContext(sourceContext);
+            newTranslation.setSourceLanguage(sourceLanguage);
+            newTranslation.setTargetLanguage(targetLanguage);
+            newTranslation = translationProviderService.generateTranslation(newTranslation);
+            return translationRepository.save(newTranslation);
+        });
         
-        if(translation.getTargetValidatedText() != null) {
-            return translation.getTargetValidatedText();
-        } else {
-            return translation.getTargetGeneratedText();
-        }
+        return translation.getTargetValidatedText() != null ? 
+            translation.getTargetValidatedText() : 
+            translation.getTargetGeneratedText();
     }
 } 

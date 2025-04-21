@@ -1,14 +1,15 @@
 package nl.vaguely.translation.service;
 
-import com.theokanning.openai.service.OpenAiService;
-import lombok.RequiredArgsConstructor;
-import nl.vaguely.translation.model.Translation;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.theokanning.openai.service.OpenAiService;
+
+import nl.vaguely.translation.model.Translation;
+
 @Service
-@RequiredArgsConstructor
 public class ChatGPTTranslationService implements TranslationProviderService {
     private final OpenAiService openAiService;
 
@@ -21,11 +22,17 @@ public class ChatGPTTranslationService implements TranslationProviderService {
     @Value("${openai.api.max-tokens}")
     private int maxTokens;
 
+    public ChatGPTTranslationService(OpenAiService openAiService) {
+        this.openAiService = openAiService;
+    }
+
     @Override
     public Translation generateTranslation(Translation translation) {
-        String prompt = String.format(
-            "As a careful United Nations translator, use precision and context to translate the following text from %s to %s." +
-            "Do not include any output other than the translation. Context: %s\n\nText: %s",
+        String prompt = String.format("""
+            As a careful United Nations translator, use precision and context to translate the following text from %s to %s.
+            Do not include any output other than the translation. Context: %s
+
+            Text: %s""",
             translation.getSourceLanguage(),
             translation.getTargetLanguage(),
             translation.getSourceContext(),
@@ -47,8 +54,14 @@ public class ChatGPTTranslationService implements TranslationProviderService {
         var chatCompletion = openAiService.createChatCompletion(chatRequest);
         var response = chatCompletion.getChoices().get(0).getMessage().getContent().trim();
 
-        translation.setTargetGeneratedText(response);
-        translation.setTargetPromptText(prompt);
-        return translation;
+        Translation result = new Translation();
+        result.setId(translation.getId());
+        result.setSourceText(translation.getSourceText());
+        result.setSourceContext(translation.getSourceContext());
+        result.setSourceLanguage(translation.getSourceLanguage());
+        result.setTargetLanguage(translation.getTargetLanguage());
+        result.setTargetPromptText(prompt);
+        result.setTargetGeneratedText(response);
+        return result;
     }
 } 

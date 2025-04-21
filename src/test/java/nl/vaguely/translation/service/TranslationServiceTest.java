@@ -1,18 +1,21 @@
 package nl.vaguely.translation.service;
 
-import nl.vaguely.translation.model.Translation;
-import nl.vaguely.translation.repository.TranslationRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import nl.vaguely.translation.model.Translation;
+import nl.vaguely.translation.repository.TranslationRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class TranslationServiceTest {
@@ -60,6 +63,9 @@ public class TranslationServiceTest {
         when(translationProviderService.generateTranslation(any()))
             .thenReturn(newTranslation);
 
+        when(translationRepository.save(any()))
+            .thenReturn(newTranslation);
+
         // When
         String result = translationService.findBySourceTextAndSourceLanguageAndTargetLanguage(
             "Hello", "Greeting", "en", "nl"
@@ -68,6 +74,7 @@ public class TranslationServiceTest {
         // Then
         assertEquals("Hallo", result);
         verify(translationProviderService).generateTranslation(any());
+        verify(translationRepository).save(any());
     }
 
     @Test
@@ -101,7 +108,8 @@ public class TranslationServiceTest {
 
         // Then
         assertEquals("Hallo daar", result.getTargetGeneratedText());
-        verify(translationRepository).save(existingTranslation);
+        verify(translationRepository).save(any());
+        verify(translationProviderService, never()).generateTranslation(any());
     }
 
     @Test
@@ -117,6 +125,7 @@ public class TranslationServiceTest {
             any(), any(), any(), any()
         )).thenReturn(Optional.empty());
 
+        when(translationProviderService.generateTranslation(any())).thenReturn(newTranslation);
         when(translationRepository.save(any())).thenReturn(newTranslation);
 
         // When
@@ -124,6 +133,7 @@ public class TranslationServiceTest {
 
         // Then
         assertNotNull(result);
-        verify(translationRepository).save(newTranslation);
+        verify(translationRepository).save(any());
+        verify(translationProviderService).generateTranslation(any());
     }
 } 

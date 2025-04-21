@@ -1,21 +1,26 @@
 package nl.vaguely.translation.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
 
-@Data
 public class TranslationRequest {
-    @NotBlank(message = "Source text is required")
+    @NotBlank
     private String sourceText;
-
     private String sourceContext;
-
-    @NotBlank(message = "Source language is required")
-    @Size(min = 2, max = 5, message = "Source language must be between 2 and 5 characters")
+    private String targetPromptText;
+    @NotBlank
     private String sourceLanguage;
-
-    @NotBlank(message = "Target language is required")
-    @Size(min = 2, max = 5, message = "Target language must be between 2 and 5 characters")
+    @NotBlank
     private String targetLanguage;
+
+    // Getters and Setters
+    public String getSourceText() { return sourceText; }
+    public void setSourceText(String sourceText) { this.sourceText = sourceText; }
+    public String getSourceContext() { return sourceContext; }
+    public void setSourceContext(String sourceContext) { this.sourceContext = sourceContext; }
+    public String getTargetPromptText() { return targetPromptText; }
+    public void setTargetPromptText(String targetPromptText) { this.targetPromptText = targetPromptText; }
+    public String getSourceLanguage() { return sourceLanguage; }
+    public void setSourceLanguage(String sourceLanguage) { this.sourceLanguage = sourceLanguage; }
+    public String getTargetLanguage() { return targetLanguage; }
+    public void setTargetLanguage(String targetLanguage) { this.targetLanguage = targetLanguage; }
 } 
