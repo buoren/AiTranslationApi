@@ -29,8 +29,10 @@ public class ChatGPTTranslationService implements TranslationProviderService {
     @Override
     public Translation generateTranslation(Translation translation) {
         String prompt = String.format("""
-            As a careful United Nations translator, use precision and context to translate the following text from %s to %s.
-            Do not include any output other than the translation. Context: %s
+            As a careful United Nations translator, use precision and context to translate 
+            the following text from the language represented by the language code "%s" to the language 
+            represented by the language code "%s".  Do not include any output other than the translation.
+            Context: %s
 
             Text: %s""",
             translation.getSourceLanguage(),
