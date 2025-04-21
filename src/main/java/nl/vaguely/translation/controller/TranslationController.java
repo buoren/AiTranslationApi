@@ -9,12 +9,14 @@ import nl.vaguely.translation.model.Translation;
 import nl.vaguely.translation.service.TranslationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/translations")
+@Slf4j
 public class TranslationController {
     private final TranslationService translationService;
     private final TranslationMapper translationMapper;
@@ -78,7 +80,6 @@ public class TranslationController {
         
         var result = new TranslationResult();
         result.setResult(translationStr);
-        
         return ResponseEntity.ok(result);
     }
 } 

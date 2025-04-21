@@ -1,7 +1,9 @@
 package nl.vaguely.translation.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
+@Data
 public class TranslationRequest {
     @NotBlank
     private String sourceText;

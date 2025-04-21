@@ -1,7 +1,9 @@
 package nl.vaguely.translation.dto;
 
 import java.time.LocalDateTime;
+import lombok.Data;
 
+@Data
 public class TranslationResponse {
     private Long id;
     private String sourceText;
