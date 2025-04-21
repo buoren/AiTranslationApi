@@ -9,7 +9,6 @@ gradle-app.setting
 *.log
 *.ctxt
 .mtj.tmp/
-*.jar
 *.war
 *.nar
 *.ear
