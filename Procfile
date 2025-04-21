@@ -1,1 +1,1 @@
-web: JAVA_OPTS="-Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8" ./gradlew clean build -x test && java $JAVA_OPTS -Dspring.profiles.active=prod -jar build/libs/AiTranslationApi-0.0.1-SNAPSHOT.jar
+web: java -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -Dspring.profiles.active=prod -jar build/libs/AiTranslationApi-0.0.1-SNAPSHOT.jar
