@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.vaguely.translation.dto.TranslationRequest;
 import nl.vaguely.translation.dto.TranslationResponse;
+import nl.vaguely.translation.dto.TranslationResult;
 import nl.vaguely.translation.mapper.TranslationMapper;
 import nl.vaguely.translation.service.TranslationService;
 import org.springframework.http.ResponseEntity;
@@ -63,13 +64,17 @@ public class TranslationController {
     }
 
     @PostMapping("/translate")
-    public ResponseEntity<String> translate(@Valid @RequestBody TranslationRequest request) {
+    public ResponseEntity<TranslationResult> translate(@Valid @RequestBody TranslationRequest request) {
         var translationStr = translationService.findBySourceTextAndSourceLanguageAndTargetLanguage(
             request.getSourceText(),
             request.getSourceContext(),
             request.getSourceLanguage(),
             request.getTargetLanguage()
         );
-        return ResponseEntity.ok(translationStr);
+        
+        var result = new TranslationResult();
+        result.setResult(translationStr);
+        
+        return ResponseEntity.ok(result);
     }
 } 
